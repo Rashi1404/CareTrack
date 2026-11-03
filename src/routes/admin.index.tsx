@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import {
   Activity,
   CalendarDays,
@@ -64,7 +64,7 @@ export const Route = createFileRoute("/admin/")({
       { property: "og:description", content: "OPD statistics, user management and reports." },
     ],
   }),
-  component: AdminWorkspace,
+  component: AdminRoute,
 });
 
 const PIE_COLORS = [
@@ -75,6 +75,16 @@ const PIE_COLORS = [
   "var(--color-chart-5)",
   "var(--color-muted-foreground)",
 ];
+
+function AdminRoute() {
+  const { user } = useApp();
+
+  if (!user) return <Navigate to="/login" />;
+  if (user.role === "patient") return <Navigate to="/patient" />;
+  if (user.role === "doctor") return <Navigate to="/doctor" />;
+
+  return <AdminWorkspace />;
+}
 
 function AdminWorkspace() {
   const { doctors, patients, appointments, cancel } = useApp();
